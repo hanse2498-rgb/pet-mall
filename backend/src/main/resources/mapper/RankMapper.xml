@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.mall.module.rank.mapper.RankMapper">
+
+    <!-- 近 7 天销量排行原始行：按分类排序 + 分类内近7天销量降序 -->
+    <select id="selectRankRows" resultType="com.mall.module.rank.vo.RankRowVO">
+        SELECT
+            p.id            AS productId,
+            p.name          AS name,
+            p.cover_img     AS coverImg,
+            c.id            AS categoryId,
+            c.name          AS categoryName,
+            SUM(s.qty)      AS sales7d,
+            (SELECT MIN(IF(k.is_discount = 1 AND k.discount_price IS NOT NULL, k.discount_price, k.price))
+               FROM tb_sku k
+              WHERE k.product_id = p.id AND k.status = 1 AND k.deleted = 0) AS minPrice
+        FROM tb_product p
+        JOIN tb_category c          ON c.id = p.category_id AND c.deleted = 0
+        JOIN tb_product_sales_stat s ON s.product_id = p.id
+             AND s.stat_date >= DATE_SUB(CURDATE(), INTERVAL 6 DAY)
+        WHERE p.deleted = 0 AND p.shelf_status = 1
+        GROUP BY p.id, p.name, p.cover_img, c.id, c.name, c.sort
+        ORDER BY c.sort ASC, sales7d DESC
+    </select>
+
+</mapper>

@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 600">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#f7f4f0"/>
+      <stop offset="1" stop-color="#ebe5dc"/>
+    </linearGradient>
+  </defs>
+  <rect width="600" height="600" fill="url(#bg)"/>
+  
+  <g>
+    <ellipse cx="300" cy="425" rx="130" ry="16" fill="rgba(90,80,70,.16)"/>
+    <rect x="236" y="300" width="128" height="120" rx="20" fill="#ffffff" stroke="#d8d2cb" stroke-width="3"/>
+    <path d="M286 300 v-34 l28 -10 v38" fill="#22A987"/>
+    <rect x="236" y="386" width="128" height="34" rx="12" fill="#22A987" opacity=".85"/>
+    <circle cx="262" cy="348" r="7" fill="#22A987" opacity=".5"/>
+    <circle cx="338" cy="330" r="8" fill="#e7c78a"/>
+  </g>
+  
+  <g>
+    <rect x="208" y="268" width="184" height="26" rx="13" fill="#22A987"/>
+    <text x="300" y="286" text-anchor="middle" font-size="14" font-family="Segoe UI, sans-serif" font-weight="600" fill="#fff" letter-spacing="1">PETKIT</text>
+  </g>
+  <text x="300" y="520" text-anchor="middle" font-size="22" font-family="'PingFang SC','Microsoft YaHei',sans-serif" font-weight="600" fill="#3a3f45">关节养护营养膏</text>
+  <text x="300" y="548" text-anchor="middle" font-size="14" font-family="'PingFang SC','Microsoft YaHei',sans-serif" fill="#9aa1ab">PETKIT · 自营正品</text>
+</svg>

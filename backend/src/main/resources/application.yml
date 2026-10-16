@@ -1,0 +1,80 @@
+server:
+  port: 8080
+  servlet:
+    context-path: /
+
+spring:
+  application:
+    name: mall-backend
+  profiles:
+    active: dev
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://${MYSQL_HOST:localhost}:${MYSQL_PORT:3306}/${MYSQL_DB:mall}?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai&useSSL=false&allowPublicKeyRetrieval=true
+    username: ${MYSQL_USER:root}
+    password: ${MYSQL_PASSWORD:123456}
+    hikari:
+      minimum-idle: 5
+      maximum-pool-size: 20
+  data:
+    redis:
+      host: ${REDIS_HOST:localhost}
+      port: ${REDIS_PORT:6379}
+      password: ${REDIS_PASSWORD:}
+      database: 0
+      timeout: 5000
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 50MB
+
+upload:
+  dir: ./upload
+  max-size-mb: 5
+  # 商品图片目录：后台上传的商品图直接存到这里（前端 public/products，经 /products/** 访问）
+  product-dir: ../frontend/public/products
+  # 宠物图片目录：后台上传的品种图案直接存到这里（前端 public/breeds，经 /breeds/** 访问）
+  breed-dir: ../frontend/public/breeds
+
+ai:
+  provider: ${AI_PROVIDER:local}   # local 本地知识库 | openai 外部大模型(OpenAI兼容)
+  openai:
+    base-url: ${AI_BASE_URL:https://api.openai.com/v1}
+    api-key: ${AI_API_KEY:}
+    model: ${AI_MODEL:gpt-4o-mini}
+    max-tokens: ${AI_MAX_TOKENS:1000}
+
+mybatis-plus:
+  configuration:
+    map-underscore-to-camel-case: true
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+  global-config:
+    banner: false
+    db-config:
+      id-type: assign_id
+      logic-delete-field: deleted
+      logic-delete-value: 1
+      logic-not-delete-value: 0
+
+sa-token:
+  token-name: satoken
+  timeout: 2592000          # token 有效期（秒），默认 30 天
+  active-timeout: -1        # 最低活跃频率，-1 为不限制
+  is-concurrent: true       # 是否允许同一账号多端登录
+  is-share: true
+  token-style: uuid
+  is-log: false
+
+springdoc:
+  api-docs:
+    path: /v3/api-docs
+  swagger-ui:
+    path: /swagger-ui.html
+
+order:
+  pay-timeout-minutes: 30   # 待支付订单超时自动取消（分钟）
+  scan-interval-ms: 60000   # 超时扫描间隔（毫秒）
+
+logging:
+  level:
+    com.mall: debug

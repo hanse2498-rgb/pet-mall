@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.mall.module.dashboard.mapper.DashboardMapper">
+
+    <!-- 核心指标（一次查询返回） -->
+    <select id="kpi" resultType="com.mall.module.dashboard.vo.DashboardKpiVO">
+        SELECT
+            (SELECT IFNULL(SUM(pay_amount), 0) FROM tb_order
+              WHERE deleted = 0 AND pay_status IN (1, 2) AND pay_time &gt;= #{start})  AS salesAmount,
+            (SELECT COUNT(*) FROM tb_order
+              WHERE deleted = 0 AND create_time &gt;= #{start})                          AS orderCount,
+            (SELECT COUNT(*) FROM tb_order
+              WHERE deleted = 0 AND pay_status IN (1, 2) AND pay_time &gt;= #{start})     AS paidOrderCount,
+            (SELECT IFNULL(SUM(pay_amount), 0) FROM tb_order
+              WHERE deleted = 0 AND pay_status = 2 AND pay_time &gt;= #{start})           AS refundAmount,
+            (SELECT COUNT(*) FROM tb_user
+              WHERE deleted = 0 AND create_time &gt;= #{start})                           AS newUsers,
+            (SELECT COUNT(*) FROM tb_order
+              WHERE deleted = 0 AND status = 1)                                          AS pendingShip,
+            (SELECT COUNT(*) FROM tb_after_sale
+              WHERE deleted = 0 AND status = 0)                                          AS pendingAfterSale
+    </select>
+
+    <!-- 销售趋势：按天 -->
+    <select id="salesTrend" resultType="com.mall.module.dashboard.vo.TrendPointVO">
+        SELECT
+            DATE_FORMAT(pay_time, '%Y-%m-%d') AS date,
+            IFNULL(SUM(pay_amount), 0)        AS salesAmount,
+            COUNT(*)                          AS orderCount
+        FROM tb_order
+        WHERE deleted = 0 AND pay_status IN (1, 2) AND pay_time &gt;= #{start}
+        GROUP BY DATE_FORMAT(pay_time, '%Y-%m-%d')
+        ORDER BY date ASC
+    </select>
+
+    <!-- 订单状态分布 -->
+    <select id="statusDist" resultType="com.mall.module.dashboard.vo.StatusCountVO">
+        SELECT status, COUNT(*) AS count
+        FROM tb_order
+        WHERE deleted = 0
+        GROUP BY status
+    </select>
+
+    <!-- 分类销售占比 -->
+    <select id="categoryShare" resultType="com.mall.module.dashboard.vo.CategoryShareVO">
+        SELECT
+            c.name               AS categoryName,
+            IFNULL(SUM(oi.subtotal), 0) AS amount,
+            IFNULL(SUM(oi.quantity), 0) AS qty
+        FROM tb_order_item oi
+        JOIN tb_order o     ON o.id = oi.order_id AND o.deleted = 0
+                           AND o.pay_status IN (1, 2) AND o.pay_time &gt;= #{start}
+        JOIN tb_sku s       ON s.id = oi.sku_id
+        JOIN tb_product p   ON p.id = s.product_id
+        JOIN tb_category c  ON c.id = p.category_id
+        GROUP BY c.id, c.name
+        ORDER BY amount DESC
+    </select>
+
+    <!-- 热销商品 Top N -->
+    <select id="topProducts" resultType="com.mall.module.dashboard.vo.TopProductVO">
+        SELECT
+            p.id                        AS productId,
+            p.name                      AS name,
+            IFNULL(SUM(oi.quantity), 0) AS qty,
+            IFNULL(SUM(oi.subtotal), 0) AS amount
+        FROM tb_order_item oi
+        JOIN tb_order o     ON o.id = oi.order_id AND o.deleted = 0
+                           AND o.pay_status IN (1, 2) AND o.pay_time &gt;= #{start}
+        JOIN tb_sku s       ON s.id = oi.sku_id
+        JOIN tb_product p   ON p.id = s.product_id
+        GROUP BY p.id, p.name
+        ORDER BY qty DESC
+        LIMIT #{limit}
+    </select>
+
+    <!-- 库存预警 -->
+    <select id="stockAlerts" resultType="com.mall.module.dashboard.vo.StockAlertVO">
+        SELECT
+            p.name         AS productName,
+            s.spec_name    AS spec,
+            s.stock        AS stock
+        FROM tb_sku s
+        JOIN tb_product p ON p.id = s.product_id
+        WHERE s.deleted = 0 AND p.deleted = 0 AND p.shelf_status = 1 AND s.stock &lt; #{threshold}
+        ORDER BY s.stock ASC
+        LIMIT 20
+    </select>
+
+</mapper>

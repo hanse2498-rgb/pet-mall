@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.mall.module.product.mapper.ProductMapper">
+
+    <!-- 最低售价子查询：优先折扣价 -->
+    <sql id="minPriceExpr">
+        (SELECT MIN(IF(s.is_discount = 1 AND s.discount_price IS NOT NULL, s.discount_price, s.price))
+           FROM tb_sku s
+          WHERE s.product_id = p.id AND s.status = 1 AND s.deleted = 0)
+    </sql>
+
+    <!-- 商品卡片分页查询 -->
+    <select id="selectCardPage" resultType="com.mall.module.product.vo.ProductCardVO">
+        SELECT
+            p.id,
+            p.name,
+            p.subtitle,
+            p.cover_img          AS coverImg,
+            p.sale_type          AS saleType,
+            p.is_near_expiry     AS isNearExpiry,
+            p.sales,
+            b.name               AS brandName,
+            c.name               AS categoryName,
+            <include refid="minPriceExpr"/> AS minPrice
+        FROM tb_product p
+        LEFT JOIN tb_brand b    ON b.id = p.brand_id AND b.deleted = 0
+        LEFT JOIN tb_category c ON c.id = p.category_id AND c.deleted = 0
+        <where>
+            p.deleted = 0 AND p.shelf_status = 1
+            <if test="q.keyword != null and q.keyword != ''">
+                AND (
+                    p.name LIKE CONCAT('%', #{q.keyword}, '%')
+                    OR p.subtitle LIKE CONCAT('%', #{q.keyword}, '%')
+                    OR b.name LIKE CONCAT('%', #{q.keyword}, '%')
+                    OR c.name LIKE CONCAT('%', #{q.keyword}, '%')
+                )
+            </if>
+            <if test="q.categoryId != null">
+                AND (p.category_id = #{q.categoryId}
+                     OR p.category_id IN (SELECT id FROM tb_category WHERE parent_id = #{q.categoryId}))
+            </if>
+            <if test="q.brandId != null">
+                AND p.brand_id = #{q.brandId}
+            </if>
+            <if test="q.saleType != null">
+                AND p.sale_type = #{q.saleType}
+            </if>
+            <if test="q.petType != null">
+                AND (p.pet_type = #{q.petType} OR p.pet_type = 0)
+            </if>
+            <if test="q.isNearExpiry != null">
+                AND p.is_near_expiry = #{q.isNearExpiry}
+            </if>
+            <if test="q.priceMin != null">
+                AND <include refid="minPriceExpr"/> &gt;= #{q.priceMin}
+            </if>
+            <if test="q.priceMax != null">
+                AND <include refid="minPriceExpr"/> &lt;= #{q.priceMax}
+            </if>
+        </where>
+        ORDER BY
+        <choose>
+            <when test="q.sort == 'sales'">p.sales DESC</when>
+            <when test="q.sort == 'price_asc'">minPrice ASC</when>
+            <when test="q.sort == 'price_desc'">minPrice DESC</when>
+            <when test="q.sort == 'new'">p.create_time DESC</when>
+            <otherwise>p.create_time DESC</otherwise>
+        </choose>
+    </select>
+
+    <!-- 商品详情基础信息 -->
+    <select id="selectDetail" resultType="com.mall.module.product.vo.ProductDetailVO">
+        SELECT
+            p.id,
+            p.name,
+            p.subtitle,
+            p.cover_img      AS coverImg,
+            p.detail_html    AS detailHtml,
+            p.sale_type      AS saleType,
+            p.is_near_expiry AS isNearExpiry,
+            p.shelf_status   AS shelfStatus,
+            p.sales,
+            b.name           AS brandName,
+            c.name           AS categoryName
+        FROM tb_product p
+        LEFT JOIN tb_brand b    ON b.id = p.brand_id AND b.deleted = 0
+        LEFT JOIN tb_category c ON c.id = p.category_id AND c.deleted = 0
+        WHERE p.id = #{id} AND p.deleted = 0
+    </select>    <!-- 搜索联想：在售商品，按相关性 + 销量取前 N 条 -->
+    <select id="selectSuggest" resultType="com.mall.module.product.vo.ProductSuggestVO">
+        SELECT
+            p.id,
+            p.name,
+            p.cover_img AS coverImg,
+            b.name      AS brandName,
+            <include refid="minPriceExpr"/> AS minPrice
+        FROM tb_product p
+        LEFT JOIN tb_brand b    ON b.id = p.brand_id AND b.deleted = 0
+        LEFT JOIN tb_category c ON c.id = p.category_id AND c.deleted = 0
+        WHERE p.deleted = 0 AND p.shelf_status = 1
+          AND (
+              p.name LIKE CONCAT('%', #{kw}, '%')
+              OR p.subtitle LIKE CONCAT('%', #{kw}, '%')
+              OR b.name LIKE CONCAT('%', #{kw}, '%')
+              OR c.name LIKE CONCAT('%', #{kw}, '%')
+          )
+        ORDER BY
+            CASE
+                WHEN p.name LIKE CONCAT(#{kw}, '%') THEN 0
+                WHEN p.name LIKE CONCAT('%', #{kw}, '%') THEN 1
+                WHEN p.subtitle LIKE CONCAT('%', #{kw}, '%') THEN 2
+                WHEN b.name LIKE CONCAT('%', #{kw}, '%') THEN 3
+                ELSE 4
+            END,
+            p.sales DESC
+        LIMIT #{limit}
+    </select>
+
+    <!-- 搜索命中的商品总数（与联想、列表同一套过滤条件） -->
+    <select id="countSuggest" resultType="long">
+        SELECT COUNT(*)
+        FROM tb_product p
+        LEFT JOIN tb_brand b    ON b.id = p.brand_id AND b.deleted = 0
+        LEFT JOIN tb_category c ON c.id = p.category_id AND c.deleted = 0
+        WHERE p.deleted = 0 AND p.shelf_status = 1
+          AND (
+              p.name LIKE CONCAT('%', #{kw}, '%')
+              OR p.subtitle LIKE CONCAT('%', #{kw}, '%')
+              OR b.name LIKE CONCAT('%', #{kw}, '%')
+              OR c.name LIKE CONCAT('%', #{kw}, '%')
+          )
+    </select>
+    <!-- 按 id 批量取商品卡片（在售） -->
+    <select id="selectCardsByIds" resultType="com.mall.module.product.vo.ProductCardVO">
+        SELECT
+            p.id,
+            p.name,
+            p.subtitle,
+            p.cover_img          AS coverImg,
+            p.sale_type          AS saleType,
+            p.is_near_expiry     AS isNearExpiry,
+            p.sales,
+            b.name               AS brandName,
+            c.name               AS categoryName,
+            <include refid="minPriceExpr"/> AS minPrice
+        FROM tb_product p
+        LEFT JOIN tb_brand b    ON b.id = p.brand_id AND b.deleted = 0
+        LEFT JOIN tb_category c ON c.id = p.category_id AND c.deleted = 0
+        WHERE p.deleted = 0 AND p.shelf_status = 1
+          AND p.id IN
+          <foreach collection="ids" item="id" open="(" separator="," close=")">#{id}</foreach>
+    </select>
+
+</mapper>

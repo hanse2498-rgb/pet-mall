@@ -1,0 +1,52 @@
+html,
+body,
+#app {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue',
+    Arial, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+  background-color: #faf7f5;
+  color: #20242a;
+  font-size: 14px;
+  -webkit-font-smoothing: antialiased;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+/* 细腻滚动条 */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-thumb {
+  background: #d9d3cd;
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #c4bcb4;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+/* 页面容器：更大留白，更柔和 */
+.page-container {
+  padding: 20px 16px 40px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* 全局过渡更顺滑 */
+.el-card,
+.el-button,
+img {
+  transition: all 0.25s ease;
+}

@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 600">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#f7f4f0"/>
+      <stop offset="1" stop-color="#ebe5dc"/>
+    </linearGradient>
+  </defs>
+  <rect width="600" height="600" fill="url(#bg)"/>
+  
+  <g>
+    <ellipse cx="300" cy="425" rx="130" ry="16" fill="rgba(90,80,70,.16)"/>
+    <rect x="170" y="250" width="150" height="96" rx="18" fill="#ffffff" stroke="#d8d2cb" stroke-width="3"/>
+    <rect x="188" y="268" width="88" height="60" rx="12" fill="#eef2f6" stroke="#d8d2cb" stroke-width="3"/>
+    <path d="M300 270 h56 v150" fill="none" stroke="#c9bfae" stroke-width="10"/>
+    <circle cx="330" cy="450" r="34" fill="#8b8680"/>
+    <circle cx="214" cy="450" r="26" fill="#8b8680"/>
+    <path d="M196 292 h-30" stroke="#E8A33D" stroke-width="12" stroke-linecap="round"/>
+  </g>
+  
+  <g>
+    <rect x="208" y="268" width="184" height="26" rx="13" fill="#E8A33D"/>
+    <text x="300" y="286" text-anchor="middle" font-size="14" font-family="Segoe UI, sans-serif" font-weight="600" fill="#fff" letter-spacing="1">HUAYUAN</text>
+  </g>
+  <text x="300" y="520" text-anchor="middle" font-size="22" font-family="'PingFang SC','Microsoft YaHei',sans-serif" font-weight="600" fill="#3a3f45">宠物推车 可折叠</text>
+  <text x="300" y="548" text-anchor="middle" font-size="14" font-family="'PingFang SC','Microsoft YaHei',sans-serif" fill="#9aa1ab">HUAYUAN · 自营正品</text>
+</svg>

@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 600">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#f7f4f0"/>
+      <stop offset="1" stop-color="#ebe5dc"/>
+    </linearGradient>
+  </defs>
+  <rect width="600" height="600" fill="url(#bg)"/>
+  
+  <g>
+    <ellipse cx="300" cy="300" rx="100" ry="16" fill="rgba(90,80,70,.16)"/>
+    <path d="M300 150 v150" stroke="#c9bfae" stroke-width="10" stroke-linecap="round"/>
+    <circle cx="300" cy="330" r="34" fill="#E05A3D"/>
+    <path d="M268 300 q28 -30 64 0 q-28 30 -64 0 Z" fill="#e05a3d"/>
+    <path d="M300 174 l30 -34 M308 166 l12 -40 M296 184 l-24 -40" stroke="#e8e2da" stroke-width="6" stroke-linecap="round"/>
+  </g>
+  
+  <g>
+    <rect x="208" y="268" width="184" height="26" rx="13" fill="#E05A3D"/>
+    <text x="300" y="286" text-anchor="middle" font-size="14" font-family="Segoe UI, sans-serif" font-weight="600" fill="#fff" letter-spacing="1">MYFOODIE</text>
+  </g>
+  <text x="300" y="520" text-anchor="middle" font-size="22" font-family="'PingFang SC','Microsoft YaHei',sans-serif" font-weight="600" fill="#3a3f45">逗猫棒套装 三件</text>
+  <text x="300" y="548" text-anchor="middle" font-size="14" font-family="'PingFang SC','Microsoft YaHei',sans-serif" fill="#9aa1ab">MYFOODIE · 自营正品</text>
+</svg>

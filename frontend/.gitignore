@@ -1,0 +1,13 @@
+# 依赖
+node_modules/
+dist/
+*.local
+
+# IDE
+.idea/
+.vscode/
+*.swp
+
+# 日志
+logs/
+*.log

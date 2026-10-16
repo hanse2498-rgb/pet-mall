@@ -1,0 +1,40 @@
+# 依赖
+node_modules/
+
+# 构建产物
+target/
+dist/
+*.tsbuildinfo
+
+# IDE / 系统
+.idea/
+.vscode/
+*.iml
+.DS_Store
+
+# 日志
+logs/
+*.log
+*.local
+
+# 本地上传的图片/文件
+backend/upload/
+
+# 环境变量（含密钥，切勿上传）
+.env
+.env.*
+*.env
+!.env.example
+
+# 工具配置（与项目无关，不公开）
+opencode.jsonc
+
+# 编辑器 / 系统
+.history/
+*.bak
+*.tmp
+Thumbs.db
+
+# 后台上传的图片（如不想公开自己上传的图，取消下面注释）
+# frontend/public/products/*-*.png
+# frontend/public/breeds/*-*.png

@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.mall.module.seckill.mapper.SeckillRecordMapper">
+
+    <update id="deductSecStock">
+        UPDATE tb_seckill_item
+        SET seckill_stock = seckill_stock - #{qty}
+        WHERE id = #{itemId} AND status = 1 AND seckill_stock &gt;= #{qty}
+    </update>
+
+    <update id="incrSold">
+        UPDATE tb_seckill_item
+        SET seckill_sold = seckill_sold + #{qty}
+        WHERE id = #{itemId}
+    </update>
+
+</mapper>
